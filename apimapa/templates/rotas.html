@@ -1,0 +1,70 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Rotas</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #mapa { height: 600px; }
+        #tabela-container { margin-top: 20px; }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <label for="corridaId">ID da corrida:</label>
+        <input type="text" id="corridaId" placeholder="Informe o ID da corrida">
+        <button onclick="buscarCorrida()">Buscar Corrida</button>
+    </div>
+
+    <div id="mapa"></div>
+
+    <!-- Mova a div do mapa antes da inclusão do script -->
+
+    <!-- Adiciona uma div para conter a tabela -->
+    <div id="tabela-container">
+        <h2>Tabela de Dados - Rides Mesclado</h2>
+        <table id="tabela">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Gênero do Usuário</th>
+                    <th>Data de Nascimento do Usuário</th>
+                    <th>Residência do Usuário</th>
+                    <th>Data da Corrida</th>
+                    <th>Hora de Início</th>
+                    <th>Hora de Término</th>
+                    <th>Estação de Início</th>
+                    <th>Estação de Término</th>
+                    <th>Duração da Corrida</th>
+                    <th>Atraso na Corrida</th>
+                    <th>Latitude da Estação de Início</th>
+                    <th>Longitude da Estação de Início</th>
+                    <th>Latitude da Estação de Término</th>
+                    <th>Longitude da Estação de Término</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Os dados serão preenchidos dinamicamente aqui usando JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="{% static 'rotas.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa das Estações</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #mapa { height: 600px; }
+    </style>
+</head>
+<body>
+    <div id="mapa"></div>
+
+    <!-- Adicione o botão para a página de rotas.html -->
+    <button onclick="window.location.href='{% url 'rotas' %}'">Ir para Rotas</button>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script type="module" src="{% static 'scripts.js' %}"></script>
+</body>
+</html>
