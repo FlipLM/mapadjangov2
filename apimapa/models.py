@@ -1,6 +1,8 @@
 from django.db import models
 
 
+
+
 class CustomDurationField(models.DurationField):
     def to_representation(self, value):
         # Converte a duração para segundos

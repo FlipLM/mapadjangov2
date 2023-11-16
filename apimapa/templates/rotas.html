@@ -7,37 +7,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa de Rotas</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <style>
-        #mapa { height: 600px; }
-        #tabela-container { margin-top: 20px; }
+        #mapa {
+            height: 500px;
+            width: 98%;
+            margin: 20px;
+        }
+        #tabela-container {
+            margin: 20px;
+        }
         table {
             border-collapse: collapse;
             width: 100%;
         }
         th, td {
             border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
+            padding: 5px;
+            text-align: center;
+            font-size: 15px;
         }
         th {
             background-color: #f2f2f2;
         }
+        .buscaid {
+            height: 90px;
+            display: flex;
+            justify-content: space-between;
+        }
+        #voltar-btn {
+            padding-top: 20px;
+            margin-bottom: 40px;
+            margin-right: 20px; /* Adiciona margem à direita para posicionar no canto superior direito */
+        }
+
+        .formid{
+            margin-left: 20px;
+            padding-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <div>
-        <label for="corridaId">ID da corrida:</label>
-        <input type="text" id="corridaId" placeholder="Informe o ID da corrida">
-        <button onclick="buscarCorrida()">Buscar Corrida</button>
+
+    <div class="buscaid bg-secondary-subtle">
+        <div class="formid">
+            <label for="corridaId">ID da corrida:</label>
+            <input type="text" id="corridaId" placeholder="Informe o ID da corrida">
+            <button class="btn btn-primary" onclick="buscarCorrida()">Buscar Corrida</button>
+        </div>
+        <div id="voltar-btn">
+            <a class="btn btn-primary" onclick="window.location.href='{% url 'mapa' %}'">Voltar</a>
+        </div>
     </div>
 
     <div id="mapa"></div>
 
-    <!-- Mova a div do mapa antes da inclusão do script -->
-
-    <!-- Adiciona uma div para conter a tabela -->
     <div id="tabela-container">
-        <h2>Tabela de Dados - Rides Mesclado</h2>
+        <h2>Corrida Selecionada</h2>
         <table id="tabela">
             <thead>
                 <tr>
@@ -64,6 +90,8 @@
         </table>
     </div>
 
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script type="module" src="{% static 'scripts.js' %}"></script>
     <script src="{% static 'rotas.js' %}"></script>

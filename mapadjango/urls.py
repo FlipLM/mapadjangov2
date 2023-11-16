@@ -6,14 +6,16 @@ from .views import RidesMescladoDetailView
 
 router = DefaultRouter()
 router.register(r'estacoes', EstacaoViewSet)
+router.register(r'rides', RidesMescladoViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('rotas/', rotas, name='rotas'),
-    path('', mapa),
     path('api/rides_mesclado/', RidesMescladoViewSet.as_view({'get': 'list'}), name='rides_mesclado_list'),
     path('api/rides_mesclado/<int:pk>/', RidesMescladoViewSet.as_view({'get': 'retrieve'}),
          name='rides_mesclado_detail'),
     path('api/', include(router.urls)),
+    path('mapa/', mapa, name='mapa'),
+    path('', mapa),
 ]

@@ -12,10 +12,13 @@ from django.views import View
 from apimapa.models import RidesMesclado
 from apimapa.serializers import RidesMescladoSerializer
 
+
 class RidesMescladoViewSet(viewsets.ModelViewSet):
     queryset = RidesMesclado.objects.all()
     serializer_class = RidesMescladoSerializer
     pagination_class = PageNumberPagination
+
+
 class RidesMescladoDetailView(View):
     def get(self, request, pk):
         ride = get_object_or_404(RidesMesclado, pk=pk)
@@ -37,12 +40,16 @@ class RidesMescladoDetailView(View):
             'station_end_lon': ride.station_end_lon,
         }
         return JsonResponse(data)
+
+
 def rotas(request):
-    # Recupere todos os dados de corrida da tabela rides_mesclado
     corridas = RidesMesclado.objects.all()
     return render(request, 'rotas.html', {'corridas': corridas})
+
+
 def mapa(request):
     return render(request, 'mapa.html')
+
 
 class EstacaoViewSet(viewsets.ModelViewSet):
     queryset = Estacao.objects.all()
@@ -62,7 +69,6 @@ class EstacaoViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
 
-
         new_station = request.data.get('station', instance.station)
         if new_station != instance.station:
             return Response({'error': 'Não é permitido alterar o campo "station".'}, status=status.HTTP_400_BAD_REQUEST)
@@ -71,5 +77,3 @@ class EstacaoViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
-
-
