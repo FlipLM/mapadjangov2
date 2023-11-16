@@ -4,6 +4,12 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
 }).addTo(mapa);
 
+
+async function formatDuration(durationInMinutes) {
+    var hours = Math.floor(durationInMinutes / 60);
+    var minutes = durationInMinutes % 60;
+    return `${hours}h ${minutes}min`;
+}
 async function buscarCorrida() {
     var corridaId = document.getElementById('corridaId').value.trim();
 
@@ -59,9 +65,9 @@ async function carregarDadosNaTabela(corridas) {
                         var newRow = tabela.insertRow();
                         for (var key in c) {
                             var cell = newRow.insertCell();
+                            // Formatando a duração aqui
                             if (key === 'ride_duration') {
-                                // Use o método formatted_duration adicionado no modelo
-                                cell.appendChild(document.createTextNode(c.formatted_duration));
+                                cell.appendChild(document.createTextNode(formatDuration(c[key])));
                             } else {
                                 cell.appendChild(document.createTextNode(c[key]));
                             }

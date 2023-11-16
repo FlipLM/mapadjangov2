@@ -33,12 +33,5 @@ class RidesMesclado(models.Model):
     station_end_lat = models.FloatField()
     station_end_lon = models.FloatField()
 
-    @property
-    def formatted_duration(self):
-        hours, remainder = divmod(self.ride_duration.seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        return f"{hours:02}:{minutes:02}:{seconds:02}"
-
-
     class Meta:
         db_table = 'rides_mesclado'
