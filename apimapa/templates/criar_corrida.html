@@ -85,7 +85,7 @@
             .then(data => {
                 if (data.hasOwnProperty('success') && data.success) {
                     // Exibir pop-up de sucesso
-                    alert("Corrida criada com sucesso!");
+                    alert(`Corrida criada com sucesso! ID: ${data.corrida_id}`);
 
                     // Verificar se deve redirecionar para a página 'rotas'
                     if (data.hasOwnProperty('redirect_to_rotas') && data.redirect_to_rotas) {

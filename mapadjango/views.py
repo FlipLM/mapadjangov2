@@ -39,11 +39,11 @@ def criar_corrida(request):
                     'lat': selected_station.lat,
                     'lon': selected_station.lon,
                 }
-                # Retorne a resposta JSON com as coordenadas
-                return JsonResponse(coordinates)
+                # Retorne a resposta JSON com as coordenadas e o ID da corrida
+                return JsonResponse({'success': True, 'corrida_id': nova_corrida.id, 'redirect_to_rotas': True})
 
             # Redirecionar para a página 'rotas' após a criação bem-sucedida da corrida
-            return JsonResponse({'success': True, 'redirect_to_rotas': True})
+            return JsonResponse({'success': True, 'corrida_id': nova_corrida.id, 'redirect_to_rotas': True})
 
     else:
         form = RidesMescladoForm()
