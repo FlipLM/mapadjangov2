@@ -1,5 +1,11 @@
 from django.db import models
 
+
+class CustomDurationField(models.DurationField):
+    def to_representation(self, value):
+        # Converte a duração para segundos
+        return int(value.total_seconds())
+
 class Estacao(models.Model):
     station = models.CharField(max_length=200, primary_key=True)
     station_number = models.IntegerField()
@@ -26,6 +32,13 @@ class RidesMesclado(models.Model):
     station_start_lon = models.FloatField()
     station_end_lat = models.FloatField()
     station_end_lon = models.FloatField()
+
+    @property
+    def formatted_duration(self):
+        hours, remainder = divmod(self.ride_duration.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        return f"{hours:02}:{minutes:02}:{seconds:02}"
+
 
     class Meta:
         db_table = 'rides_mesclado'

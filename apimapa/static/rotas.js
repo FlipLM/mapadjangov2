@@ -1,71 +1,76 @@
-// rotas.js
-
 var mapa = L.map('mapa').setView([-15.783479, -47.913372], 13);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
 }).addTo(mapa);
 
-function buscarCorrida() {
-    var corridaId = document.getElementById('corridaId').value;
+async function buscarCorrida() {
+    var corridaId = document.getElementById('corridaId').value.trim();
 
-    if (corridaId.trim() !== '') {
-        fetch(`/api/rides_mesclado/${corridaId}/`)
-            .then(response => response.json())
-            .then(corrida => {
-                if (corrida) {
-                    // Limpar map para remover rotas anteriores
-                    mapa.eachLayer(layer => {
-                        if (layer instanceof L.Polyline) {
-                            mapa.removeLayer(layer);
-                        }
-                    });
+    if (corridaId !== '') {
+        try {
+            const response = await fetch(`/api/rides_mesclado/${corridaId}/`);
+            const corrida = await response.json();
 
-                    // Adicionar nova rota ao mapa
-                    var polyline = L.polyline(
-                        [
-                            [corrida.station_start_lat, corrida.station_start_lon],
-                            [corrida.station_end_lat, corrida.station_end_lon]
-                        ],
-                        { color: 'red' }
-                    ).addTo(mapa);
+            if (corrida) {
+                // Limpar map para remover rotas anteriores
+                mapa.eachLayer(layer => {
+                    if (layer instanceof L.Polyline) {
+                        mapa.removeLayer(layer);
+                    }
+                });
 
-                    // Adicionar um Popup com informações da rota
-                    polyline.bindPopup(`Rota ID: ${corrida.id}`);
+                // Adicionar nova rota ao mapa
+                var polyline = L.polyline(
+                    [
+                        [corrida.station_start_lat, corrida.station_start_lon],
+                        [corrida.station_end_lat, corrida.station_end_lon]
+                    ],
+                    { color: 'red' }
+                ).addTo(mapa);
 
-                    // Chamar a função para carregar dados na tabela
-                    carregarDadosNaTabela();
-                } else {
-                    alert(`Corrida com ID ${corridaId} não encontrada.`);
-                }
-            })
-            .catch(error => {
-                console.error(`Erro ao buscar corrida com ID ${corridaId}:`, error);
-            });
+                // Adicionar um Popup com informações da rota
+                polyline.bindPopup(`Rota ID: ${corrida.id}`);
+
+                // Chamar a função para carregar dados na tabela
+                carregarDadosNaTabela([corrida]);
+            } else {
+                alert(`Corrida com ID ${corridaId} não encontrada.`);
+            }
+        } catch (error) {
+            console.error(`Erro ao buscar corrida com ID ${corridaId}:`, error);
+        }
     } else {
         alert('Por favor, informe o ID da corrida.');
     }
 }
 
-function carregarDadosNaTabela() {
-    fetch('/api/rides_mesclado/')  // Substitua pela sua URL API correta
+async function carregarDadosNaTabela(corridas) {
+    // Substitua pela sua URL API correta
+    fetch('/api/rides_mesclado/')
         .then(response => response.json())
         .then(data => {
             var tabela = document.querySelector('table tbody');
             tabela.innerHTML = ''; // Limpar conteúdo existente
 
-            data.forEach(corrida => {
-                var newRow = tabela.insertRow();
-                for (var key in corrida) {
-                    var cell = newRow.insertCell();
-                    cell.appendChild(document.createTextNode(corrida[key]));
-                }
+            corridas.forEach(corrida => {
+                data.forEach(c => {
+                    if (c.id === corrida.id) {
+                        var newRow = tabela.insertRow();
+                        for (var key in c) {
+                            var cell = newRow.insertCell();
+                            if (key === 'ride_duration') {
+                                // Use o método formatted_duration adicionado no modelo
+                                cell.appendChild(document.createTextNode(c.formatted_duration));
+                            } else {
+                                cell.appendChild(document.createTextNode(c[key]));
+                            }
+                        }
+                    }
+                });
             });
         })
         .catch(error => {
             console.error('Erro ao carregar dados:', error);
         });
 }
-
-// Chame a função ao carregar a página para preencher a tabela
-carregarDadosNaTabela();

@@ -1,5 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.exceptions import APIException
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework import status
 from apimapa.models import Estacao
@@ -14,6 +15,7 @@ from apimapa.serializers import RidesMescladoSerializer
 class RidesMescladoViewSet(viewsets.ModelViewSet):
     queryset = RidesMesclado.objects.all()
     serializer_class = RidesMescladoSerializer
+    pagination_class = PageNumberPagination
 class RidesMescladoDetailView(View):
     def get(self, request, pk):
         ride = get_object_or_404(RidesMesclado, pk=pk)
