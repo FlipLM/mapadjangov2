@@ -11,8 +11,44 @@ from django.http import JsonResponse
 from django.views import View
 from apimapa.models import RidesMesclado
 from apimapa.serializers import RidesMescladoSerializer
+from django.shortcuts import render, redirect
+from .forms import RidesMescladoForm
+from django.http import JsonResponse
+
+def get_station_coordinates(request, station_name):
+    try:
+        station = Estacao.objects.get(station_name=station_name)
+        coordinates = {'lat': station.lat, 'lon': station.lon}
+        return JsonResponse(coordinates)
+    except Estacao.DoesNotExist:
+        return JsonResponse({'error': 'Estação não encontrada'}, status=404)
 
 
+def criar_corrida(request):
+    if request.method == 'POST':
+        form = RidesMescladoForm(request.POST)
+        if form.is_valid():
+            nova_corrida = form.save()
+            nova_corrida.save()
+
+            station_start = request.POST.get('station_start')
+            selected_station = Estacao.objects.filter(station_name=station_start).first()
+
+            if selected_station:
+                coordinates = {
+                    'lat': selected_station.lat,
+                    'lon': selected_station.lon,
+                }
+                # Retorne a resposta JSON com as coordenadas
+                return JsonResponse(coordinates)
+
+            # Redirecionar para a página 'rotas' após a criação bem-sucedida da corrida
+            return JsonResponse({'success': True, 'redirect_to_rotas': True})
+
+    else:
+        form = RidesMescladoForm()
+
+    return render(request, 'criar_corrida.html', {'form': form})
 class RidesMescladoViewSet(viewsets.ModelViewSet):
     queryset = RidesMesclado.objects.all()
     serializer_class = RidesMescladoSerializer

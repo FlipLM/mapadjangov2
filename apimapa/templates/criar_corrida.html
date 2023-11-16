@@ -1,0 +1,106 @@
+<!-- criar_corrida.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Nova Corrida</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        a {
+            margin: 20px;
+        }
+
+        .navbar{
+            margin-bottom: 40px;
+        }
+
+        .container{
+            margin-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="navbar d-flex justify-content-lg-between bg-secondary-subtle">
+    <h1 class= "m-2 ms-4">Criar nova corrida</h1>
+    <div class="btn-container ">
+        <a class="btn btn-primary" onclick="window.location.href='{% url 'rotas' %}'">Voltar</a>
+    </div>
+
+
+</div>
+    <div class="container form-group-sm">
+        <form method="post" action="{% url 'criar_corrida' %}" class="form-horizontal" id="corridaForm">
+            {% csrf_token %}
+            <table class="table table-striped table-bordered table-hover">
+                <tbody>
+                    {{ form.as_table }}
+                </tbody>
+            </table>
+            <div id="coordinates" class="hidden"></div>
+            <input type="submit" value="Criar Corrida" class="btn btn-primary mt-3" onclick="submitFormWithDelay(event)">
+        </form>
+    </div>
+
+    <script>
+        const getCoordinatesForStation = (selectedStation, latFieldId, lonFieldId) => {
+            // Substitua a lógica abaixo pela chamada AJAX para obter as coordenadas da estação
+            fetch(`/api/estacoes/${selectedStation}/`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById(latFieldId).value = data.lat;
+                    document.getElementById(lonFieldId).value = data.lon;
+                    document.getElementById("coordinates").style.display = "none";
+                })
+                .catch(error => console.error('Erro ao obter coordenadas:', error));
+        };
+
+        document.getElementById("id_station_start").addEventListener("change", function () {
+            var selectedStation = this.value;
+            getCoordinatesForStation(selectedStation, "id_station_start_lat", "id_station_start_lon");
+        });
+
+        document.getElementById("id_station_end").addEventListener("change", function () {
+            var selectedStation = this.value;
+            getCoordinatesForStation(selectedStation, "id_station_end_lat", "id_station_end_lon");
+        });
+
+
+
+        // Substitua o evento de envio do formulário para manipular a resposta JSON
+        document.getElementById("corridaForm").addEventListener("submit", function (event) {
+            event.preventDefault(); // Impedir o envio normal do formulário
+
+            // Substitua pelo caminho correto da sua view que cria a corrida
+            fetch('{% url "criar_corrida" %}', {
+                method: 'POST',
+                body: new FormData(event.target),
+                headers: {
+                    'X-CSRFToken': document.querySelector('input[name="csrfmiddlewaretoken"]').value
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.hasOwnProperty('success') && data.success) {
+                    // Exibir pop-up de sucesso
+                    alert("Corrida criada com sucesso!");
+
+                    // Verificar se deve redirecionar para a página 'rotas'
+                    if (data.hasOwnProperty('redirect_to_rotas') && data.redirect_to_rotas) {
+                        window.location.href = '{% url "rotas" %}';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao criar a corrida:', error);
+                // Exibir mensagem de erro, se necessário
+                alert("Erro ao criar a corrida.");
+            });
+        });
+    </script>
+
+</body>
+
+</html>
