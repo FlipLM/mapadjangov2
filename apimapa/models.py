@@ -26,7 +26,7 @@ class RidesMesclado(models.Model):
     time_end = models.TimeField()
     station_start = models.CharField(max_length=255)
     station_end = models.CharField(max_length=255)
-    ride_duration = models.DurationField()
+    ride_duration = models.FloatField()
     ride_late = models.BooleanField()
     station_start_lat = models.FloatField()
     station_start_lon = models.FloatField()

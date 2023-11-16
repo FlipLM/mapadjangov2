@@ -52,31 +52,31 @@ async function buscarCorrida() {
 }
 
 async function carregarDadosNaTabela(corridas) {
-    // Substitua pela sua URL API correta
-    fetch('/api/rides_mesclado/')
-        .then(response => response.json())
-        .then(data => {
-            var tabela = document.querySelector('table tbody');
-            tabela.innerHTML = ''; // Limpar conteúdo existente
+    try {
+        // Substitua pela sua URL API correta
+        const response = await fetch('/api/rides_mesclado/');
+        const data = await response.json();
 
-            corridas.forEach(corrida => {
-                data.forEach(c => {
-                    if (c.id === corrida.id) {
-                        var newRow = tabela.insertRow();
-                        for (var key in c) {
-                            var cell = newRow.insertCell();
-                            // Formatando a duração aqui
-                            if (key === 'ride_duration') {
-                                cell.appendChild(document.createTextNode(formatDuration(c[key])));
-                            } else {
-                                cell.appendChild(document.createTextNode(c[key]));
-                            }
+        var tabela = document.querySelector('table tbody');
+        tabela.innerHTML = ''; // Limpar conteúdo existente
+
+        for (const corrida of corridas) {
+            for (const c of data) {
+                if (c.id === corrida.id) {
+                    var newRow = tabela.insertRow();
+                    for (var key in c) {
+                        var cell = newRow.insertCell();
+                        // Exibindo diretamente os valores numéricos sem conversão para horas
+                        if (typeof c[key] === 'number') {
+                            cell.appendChild(document.createTextNode(c[key].toString()));
+                        } else {
+                            cell.appendChild(document.createTextNode(c[key]));
                         }
                     }
-                });
-            });
-        })
-        .catch(error => {
-            console.error('Erro ao carregar dados:', error);
-        });
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+    }
 }
