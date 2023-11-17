@@ -1,6 +1,6 @@
 # Projeto WebGIS
 
-Este é um projeto WebGIS que visa [insira aqui uma breve descrição do propósito do projeto, como por exemplo, visualizar dados geoespaciais em um ambiente web interativo].
+Este é um projeto WebGIS.
 
 ## Instruções para Execução
 
