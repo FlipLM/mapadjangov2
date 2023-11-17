@@ -10,6 +10,7 @@ async function formatDuration(durationInMinutes) {
     var minutes = durationInMinutes % 60;
     return `${hours}h ${minutes}min`;
 }
+
 async function buscarCorrida() {
     var corridaId = document.getElementById('corridaId').value.trim();
 
@@ -35,8 +36,22 @@ async function buscarCorrida() {
                     { color: 'red' }
                 ).addTo(mapa);
 
+                // Dentro da função buscarCorrida, após criar a polilinha
+                var startStation = L.marker([corrida.station_start_lat, corrida.station_start_lon])
+                .addTo(mapa)
+                .bindPopup(`Estação de Início: ${corrida.station_start}`,{ autoClose: false }).openPopup();;
+
+                var endStation = L.marker([corrida.station_end_lat, corrida.station_end_lon])
+                .addTo(mapa)
+                .bindPopup(`Estação de Fim: ${corrida.station_end}`,{ autoClose: false }).openPopup();;
+
+
                 // Adicionar um Popup com informações da rota
                 polyline.bindPopup(`Rota ID: ${corrida.id}`);
+
+                // Ajustar o mapa para conter a rota
+                var bounds = polyline.getBounds();
+                mapa.setView(bounds.getCenter(), mapa.getBoundsZoom(bounds));
 
                 // Chamar a função para carregar dados na tabela
                 carregarDadosNaTabela([corrida]);
