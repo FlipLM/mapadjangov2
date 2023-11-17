@@ -11,7 +11,7 @@ Siga os passos abaixo para executar a aplicação:
 2. Se ainda não tiver, crie um ambiente virtual conda executando o seguinte comando:
 
     ```bash
-    conda create -n nome_do_ambiente
+    conda create -n nome_do_ambiente python=3.11.5
     ```
 
 3. Ative o ambiente virtual:
