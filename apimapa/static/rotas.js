@@ -14,18 +14,18 @@ async function formatDuration(durationInMinutes) {
 async function buscarCorrida() {
     var corridaId = document.getElementById('corridaId').value.trim();
 
-            if (corridaId !== '') {
-                try {
-                    const response = await fetch(`/api/rides_mesclado/${corridaId}/`);
-                    const corrida = await response.json();
+    if (corridaId !== '') {
+        try {
+            const response = await fetch(`/api/rides_mesclado/${corridaId}/`);
+            const corrida = await response.json();
 
-                    if (corrida) {
-                        // Limpar map para remover rotas, pings e controles antigos
-                        mapa.eachLayer(layer => {
-                            if (layer instanceof L.Polyline || layer instanceof L.Marker) {
-                                mapa.removeLayer(layer);
-                            }
-                        });
+            if (corrida) {
+                // Limpar map para remover rotas anteriores
+                mapa.eachLayer(layer => {
+                    if (layer instanceof L.Polyline) {
+                        mapa.removeLayer(layer);
+                    }
+                });
 
                 // Adicionar nova rota ao mapa
                 var polyline = L.polyline(
@@ -36,21 +36,36 @@ async function buscarCorrida() {
                     { color: 'red' }
                 ).addTo(mapa);
 
+                // Dentro da função buscarCorrida, após criar a polilinha
+                var startStation = L.marker([corrida.station_start_lat, corrida.station_start_lon])
+                .addTo(mapa)
+                .bindPopup(`Estação de Início: ${corrida.station_start}`,{ autoClose: false }).openPopup();;
+
+                var endStation = L.marker([corrida.station_end_lat, corrida.station_end_lon])
+                .addTo(mapa)
+                .bindPopup(`Estação de Fim: ${corrida.station_end}`,{ autoClose: false }).openPopup();;
+
+
                 // Adicionar um Popup com informações da rota
                 polyline.bindPopup(`Rota ID: ${corrida.id}`);
 
-                        // Chamar a função para carregar dados na tabela
-                        carregarDadosNaTabela([corrida]);
-                    } else {
-                        alert(`Corrida com ID ${corridaId} não encontrada.`);
-                    }
-                } catch (error) {
-                    console.error(`Erro ao buscar corrida com ID ${corridaId}:`, error);
-                }
+                // Ajustar o mapa para conter a rota
+                var bounds = polyline.getBounds();
+                mapa.setView(bounds.getCenter(), mapa.getBoundsZoom(bounds));
+
+                // Chamar a função para carregar dados na tabela
+                carregarDadosNaTabela([corrida]);
             } else {
+                alert(`Corrida com ID ${corridaId} não encontrada.`);
+            }
+        } catch (error) {
+            console.error(`Erro ao buscar corrida com ID ${corridaId}:`, error);
+        }
+    } else {
         alert('Por favor, informe o ID da corrida.');
     }
 }
+
 
 async function carregarDadosNaTabela(corridas) {
     try {
