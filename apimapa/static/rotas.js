@@ -40,6 +40,19 @@ async function buscarCorrida() {
 
                         }).addTo(mapa);
 
+                        //criar marcadores das estações de início e fim
+                        var startStation = L.marker([corrida.station_start_lat, corrida.station_start_lon])
+                        .addTo(mapa)
+                        .bindPopup(`Estação de Início: ${corrida.station_start}`,{ autoClose: false }).openPopup();
+
+                        var endStation = L.marker([corrida.station_end_lat, corrida.station_end_lon])
+                        .addTo(mapa)
+                        .bindPopup(`Estação de Fim: ${corrida.station_end}`,{ autoClose: false }).openPopup();
+
+
+                        // Ajustar o mapa para conter a rota
+                        var bounds = polyline.getBounds();
+                        mapa.setView(bounds.getCenter(), mapa.getBoundsZoom(bounds));
 
                         // Chamar a função para carregar dados na tabela
                         carregarDadosNaTabela([corrida]);
@@ -54,10 +67,6 @@ async function buscarCorrida() {
 
     }
 }
-                // Ajustar o mapa para conter a rota
-                var bounds = polyline.getBounds();
-                mapa.setView(bounds.getCenter(), mapa.getBoundsZoom(bounds));
-
 
 async function carregarDadosNaTabela(corridas) {
     try {
