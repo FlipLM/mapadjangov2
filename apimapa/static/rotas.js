@@ -1,9 +1,8 @@
 var mapa = L.map('mapa').setView([-15.783479, -47.913372], 13);
-
+var rotaLayer; // Adiciona uma variável para armazenar a camada da rota
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
 }).addTo(mapa);
-
 
 async function formatDuration(durationInMinutes) {
     var hours = Math.floor(durationInMinutes / 60);
@@ -11,21 +10,22 @@ async function formatDuration(durationInMinutes) {
     return `${hours}h ${minutes}min`;
 }
 
+
 async function buscarCorrida() {
     var corridaId = document.getElementById('corridaId').value.trim();
 
-    if (corridaId !== '') {
-        try {
-            const response = await fetch(`/api/rides_mesclado/${corridaId}/`);
-            const corrida = await response.json();
+            if (corridaId !== '') {
+                try {
+                    const response = await fetch(`/api/rides_mesclado/${corridaId}/`);
+                    const corrida = await response.json();
 
-            if (corrida) {
-                // Limpar map para remover rotas anteriores
-                mapa.eachLayer(layer => {
-                    if (layer instanceof L.Polyline) {
-                        mapa.removeLayer(layer);
-                    }
-                });
+                    if (corrida) {
+                        // Limpar map para remover rotas, pings e controles antigos
+                        mapa.eachLayer(layer => {
+                            if (layer instanceof L.Polyline || layer instanceof L.Marker) {
+                                mapa.removeLayer(layer);
+                            }
+                        });
 
                 // Adicionar nova rota ao mapa
                 var polyline = L.polyline(
@@ -36,32 +36,18 @@ async function buscarCorrida() {
                     { color: 'red' }
                 ).addTo(mapa);
 
-                // Dentro da função buscarCorrida, após criar a polilinha
-                var startStation = L.marker([corrida.station_start_lat, corrida.station_start_lon])
-                .addTo(mapa)
-                .bindPopup(`Estação de Início: ${corrida.station_start}`,{ autoClose: false }).openPopup();;
-
-                var endStation = L.marker([corrida.station_end_lat, corrida.station_end_lon])
-                .addTo(mapa)
-                .bindPopup(`Estação de Fim: ${corrida.station_end}`,{ autoClose: false }).openPopup();;
-
-
                 // Adicionar um Popup com informações da rota
                 polyline.bindPopup(`Rota ID: ${corrida.id}`);
 
-                // Ajustar o mapa para conter a rota
-                var bounds = polyline.getBounds();
-                mapa.setView(bounds.getCenter(), mapa.getBoundsZoom(bounds));
-
-                // Chamar a função para carregar dados na tabela
-                carregarDadosNaTabela([corrida]);
+                        // Chamar a função para carregar dados na tabela
+                        carregarDadosNaTabela([corrida]);
+                    } else {
+                        alert(`Corrida com ID ${corridaId} não encontrada.`);
+                    }
+                } catch (error) {
+                    console.error(`Erro ao buscar corrida com ID ${corridaId}:`, error);
+                }
             } else {
-                alert(`Corrida com ID ${corridaId} não encontrada.`);
-            }
-        } catch (error) {
-            console.error(`Erro ao buscar corrida com ID ${corridaId}:`, error);
-        }
-    } else {
         alert('Por favor, informe o ID da corrida.');
     }
 }
@@ -72,8 +58,8 @@ async function carregarDadosNaTabela(corridas) {
         const response = await fetch('/api/rides_mesclado/');
         const data = await response.json();
 
-        var tabela = document.querySelector('table tbody');
-        tabela.innerHTML = ''; // Limpar conteúdo existente
+        var tabela = document.querySelector('#tabela tbody');
+        tabela.innerHTML = ''; // Limpar todas as linhas existentes
 
         for (const corrida of corridas) {
             for (const c of data) {
@@ -93,5 +79,12 @@ async function carregarDadosNaTabela(corridas) {
         }
     } catch (error) {
         console.error('Erro ao carregar dados:', error);
+    }
+}
+
+// Função para limpar a camada de rota quando necessário
+function limparRota() {
+    if (rotaLayer) {
+        mapa.removeControl(rotaLayer);
     }
 }
